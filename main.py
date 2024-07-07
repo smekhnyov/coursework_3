@@ -6,7 +6,7 @@ def start(message):
     cur = conn.cursor()
     cur.execute("SELECT * FROM students")
     row = cur.fetchone()
-    bot.send_message(message.chat.id, f"{row[0]} {row[1]}")
+    bot.send_message(message.chat.id, f"{row[1]} {row[2]}")
 
 
 bot.polling()
