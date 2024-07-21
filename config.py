@@ -12,42 +12,6 @@ conn = psycopg2.connect(dbname=os.getenv("DB_NAME"), user=os.getenv("DB_USER"), 
 token = os.getenv("TELEGRAM_TOKEN")
 bot = telebot.TeleBot(token)
 
-def get_tables():
-    cur = conn.cursor()
-    cur.execute("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'")
-    tables = cur.fetchall()
-    for i in range(len(tables)):
-        tables[i] = tables[i][0]
-    return tables
-
-def get_columns(table):
-    cur = conn.cursor()
-    cur.execute(f"SELECT column_name FROM information_schema.columns WHERE table_name = '{table}'")
-    columns = cur.fetchall()
-    for i in range(len(columns)):
-        columns[i] = columns[i][0]
-    return columns
-
-
-def get_column_info(table, column):
-    cur = conn.cursor()
-    cur.execute(f"""
-        SELECT data_type, character_maximum_length, is_nullable, column_default
-        FROM information_schema.columns
-        WHERE table_name = '{table}' AND column_name = '{column}'
-    """)
-    column_info = cur.fetchone()
-
-    if column_info:
-        column_info_dict = {
-            'data_type': column_info[0],
-            'character_maximum_length': column_info[1],
-            'is_nullable': False if column_info[2] == 'NO' else 'YES',
-            'column_default': column_info[3]
-        }
-        return column_info_dict
-    else:
-        return None
 
 def validate_input(value, data_type, max_length=None):
     try:

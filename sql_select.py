@@ -8,7 +8,7 @@ import MyKeyboards
 def call_select(call):
     if len(call.data.split("@")) == 1:
         table = call.data.split("#")[1]
-        bot.send_message(call.message.chat.id, "SELECT", reply_markup=MyKeyboards.select_columns("select", table))
+        bot.send_message(call.message.chat.id, "SELECT", reply_markup=MyKeyboards.select_columns(table))
     else:
         table = re.sub("select#", "", call.data).split("@")[0]
         column = re.sub("select#", "", call.data).split("@")[1]

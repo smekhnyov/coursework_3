@@ -2,20 +2,20 @@ import telebot
 from config import *
 import re
 import MyKeyboards
+import Postgres
 
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith("insert#"))
 def call_insert(call):
-
     sql_insert(call.message, call.data.split("#")[1], [])
 
 def sql_insert(message: telebot.types.Message, table: str, data: list, current_column:str=None):
-    columns = get_columns(table)
+    columns = Postgres.get_columns(table)
 
     if current_column is None:
         current_column = columns[0]
     else:
-        info = get_column_info(table, current_column)
+        info = Postgres.get_column_info(table, current_column)
         if not info['is_nullable'] and message.text == 'NULL':
             bot.send_message(message.chat.id, f"Column '{current_column}' cannot be NULL. Please enter a value.")
             msg = bot.send_message(message.chat.id, f"INSERT INTO {table} ({current_column})\n\n<pre>{info}</pre>",
@@ -41,13 +41,13 @@ def sql_insert(message: telebot.types.Message, table: str, data: list, current_c
             else:
                 return end_insert(message, table, data)
 
-    info = get_column_info(table, current_column)
+    info = Postgres.get_column_info(table, current_column)
     msg = bot.send_message(message.chat.id, f"INSERT INTO {table} ({current_column})\n\n<pre>{info}</pre>", parse_mode='HTML')
     bot.register_next_step_handler(msg, sql_insert, table, data, current_column)
 
 def end_insert(message, table, data):
     data = tuple(data)
-    info = ', '.join([str(i) for i in tuple(get_columns(table))])
+    info = ', '.join([str(i) for i in tuple(Postgres.get_columns(table))])
     values = []
     for item in data:
         if item == 'DEFAULT':
