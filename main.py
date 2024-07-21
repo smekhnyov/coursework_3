@@ -3,6 +3,7 @@ import MyKeyboards
 import re
 import sql_insert
 import sql_select
+import sql_update
 
 @bot.message_handler(commands=["start"])
 def com_start(message):
@@ -16,7 +17,7 @@ def com_text(message):
     elif message.text == "INSERT":
         bot.send_message(message.chat.id, "INSERT", reply_markup=MyKeyboards.tables("insert"))
     elif message.text == "UPDATE":
-        bot.send_message(message.chat.id, "UPDATE", reply_markup=MyKeyboards.tables())
+        bot.send_message(message.chat.id, "UPDATE", reply_markup=MyKeyboards.tables("update"))
     elif message.text == "DELETE":
         bot.send_message(message.chat.id, "DELETE", reply_markup=MyKeyboards.tables())
 
