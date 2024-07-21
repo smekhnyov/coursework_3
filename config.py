@@ -49,7 +49,7 @@ def get_column_info(table, column):
     else:
         return None
 
-def validate_input(value, data_type):
+def validate_input(value, data_type, max_length=None):
     try:
         if data_type == 'integer':
             int(value)
@@ -62,7 +62,8 @@ def validate_input(value, data_type):
             import datetime
             datetime.datetime.strptime(value, '%Y-%m-%d' if data_type == 'date' else '%Y-%m-%d %H:%M:%S')
         elif data_type == 'character varying' or data_type == 'text':
-            pass
+            if max_length is not None and len(value) > max_length:
+                raise ValueError
         else:
             pass
         return True

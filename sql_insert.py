@@ -22,9 +22,10 @@ def sql_insert(message: telebot.types.Message, table: str, data: list, current_c
                                    parse_mode='HTML')
             bot.register_next_step_handler(msg, sql_insert, table, data, current_column)
             return
-        elif not validate_input(message.text, info['data_type']) and message.text != 'DEFAULT':
+        elif not validate_input(message.text, info['data_type'], info['character_maximum_length']) and message.text != 'DEFAULT':
             bot.send_message(message.chat.id,
-                             f"Invalid data type for column '{current_column}'. Expected {info['data_type']}.")
+                             f"Invalid data type or length for column '{current_column}'. Expected {info['data_type']} "
+                             f"with maximum length {info['character_maximum_length']}.")
             msg = bot.send_message(message.chat.id, f"INSERT INTO {table} ({current_column})\n\n<pre>{info}</pre>",
                                    parse_mode='HTML')
             bot.register_next_step_handler(msg, sql_insert, table, data, current_column)
