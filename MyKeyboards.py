@@ -10,15 +10,16 @@ def main():
     main_key.row('DELETE')
     return main_key
 
-def tables():
+def tables(prefix):
     tables_key = types.InlineKeyboardMarkup()
     for table in get_tables():
-        tables_key.add(types.InlineKeyboardButton(table[0], callback_data="select_" + table[0]))
+        tables_key.add(types.InlineKeyboardButton(table, callback_data=prefix + "#" + table))
     return tables_key
 
-def columns(table):
+
+def select_columns(prefix, table):
     columns_key = types.InlineKeyboardMarkup()
     for column in get_columns(table):
-        columns_key.add(types.InlineKeyboardButton(column[0], callback_data="select_" + table + "@" + column[0]))
-    columns_key.add(types.InlineKeyboardButton("ALL", callback_data="select_" + table + "@*"))
+        columns_key.add(types.InlineKeyboardButton(column, callback_data="select#" + table + "@" + column))
+    columns_key.add(types.InlineKeyboardButton("ALL", callback_data="select#" + table + "@*"))
     return columns_key
