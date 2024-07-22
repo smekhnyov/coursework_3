@@ -1,7 +1,7 @@
 import Postgres
 from config import *
 
-def get_tables():
+def get_tables() -> list:
     cur = conn.cursor()
     cur.execute("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'")
     tables = cur.fetchall()
@@ -9,7 +9,7 @@ def get_tables():
         tables[i] = tables[i][0]
     return tables
 
-def get_columns(table):
+def get_columns(table) -> list:
     cur = conn.cursor()
     cur.execute(f"SELECT column_name FROM information_schema.columns WHERE table_name = '{table}'")
     columns = cur.fetchall()
@@ -17,7 +17,7 @@ def get_columns(table):
         columns[i] = columns[i][0]
     return columns
 
-def get_column_info(table, column):
+def get_column_info(table, column) -> dict:
     cur = conn.cursor()
     cur.execute(f"""
         SELECT data_type, character_maximum_length, is_nullable, column_default
@@ -37,7 +37,7 @@ def get_column_info(table, column):
     else:
         return None
 
-def get_primary_keys(table):
+def get_primary_keys(table) -> list:
     cur = conn.cursor()
     cur.execute(f"""
                 SELECT a.attname
@@ -55,7 +55,7 @@ def get_primary_keys(table):
             primary_keys[i] = primary_keys[i][0]
     return primary_keys
 
-def get_data_from_column(table, column):
+def get_data_from_column(table, column) -> list:
     cur = conn.cursor()
     cur.execute(f"SELECT {column} FROM {table}")
     data = cur.fetchall()
@@ -63,7 +63,7 @@ def get_data_from_column(table, column):
         data[i] = data[i][0]
     return data
 
-def get_data_by_key_from_column(table, column, key):
+def get_data_by_key_from_column(table, column, key) -> str:
     cur = conn.cursor()
     cur.execute(f"SELECT {column} FROM {table} WHERE {Postgres.get_primary_keys(table)} = '{key}'")
     data = cur.fetchone()

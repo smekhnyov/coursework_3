@@ -13,7 +13,7 @@ token = os.getenv("TELEGRAM_TOKEN")
 bot = telebot.TeleBot(token)
 
 
-def validate_input(value, data_type, max_length=None):
+def validate_input(value, data_type, max_length=None) -> bool:
     try:
         if data_type == 'integer':
             int(value)
@@ -34,7 +34,7 @@ def validate_input(value, data_type, max_length=None):
     except ValueError:
         return False
 
-def convert_list_to_str(list, colnames):
+def convert_list_to_str(list, colnames) -> str:
     table = PrettyTable()
     table.field_names = colnames
     for row in list:
