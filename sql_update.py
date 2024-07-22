@@ -28,14 +28,19 @@ def sql_update(message: telebot.types.Message, table: str, column: str, primary_
     info = Postgres.get_column_info(table, column)
     new_value = message.text
 
-    # Validate the new value
+    if not info['is_nullable'] and new_value == 'NULL':
+        msg = bot.send_message(message.chat.id, "Column cannot be NULL. Please enter a new value.")
+        bot.register_next_step_handler(msg, sql_update, table, column, primary_key)
+        return
+
     if not validate_input(new_value, info['data_type'], info['character_maximum_length']):
         msg = bot.send_message(message.chat.id, "Invalid input. Please enter a new value.")
         bot.register_next_step_handler(msg, sql_update, table, column, primary_key)
         return
 
-    # Add quotes for string types
-    if info['data_type'] in ['character varying', 'text', 'date', 'timestamp', 'timestamp with time zone', 'timestamp without time zone']:
+    if message.text == 'DEFAULT' and info['column_default'] is not None:
+        new_value = info['column_default']
+    elif info['data_type'] in ['character varying', 'text', 'date', 'timestamp', 'timestamp with time zone', 'timestamp without time zone']:
         new_value = f"'{new_value}'"
 
     # Construct the SQL update statement
