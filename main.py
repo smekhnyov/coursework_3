@@ -4,6 +4,7 @@ import re
 import sql_insert
 import sql_select
 import sql_update
+import sql_delete
 
 @bot.message_handler(commands=["start"])
 def com_start(message):
@@ -19,7 +20,7 @@ def com_text(message):
     elif message.text == "UPDATE":
         bot.send_message(message.chat.id, "UPDATE", reply_markup=MyKeyboards.tables("update"))
     elif message.text == "DELETE":
-        bot.send_message(message.chat.id, "DELETE", reply_markup=MyKeyboards.tables())
+        sql_delete.start_delete(message)
 
 
 bot.polling()
