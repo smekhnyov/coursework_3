@@ -29,5 +29,4 @@ def update_columns(table, primary_key):
     columns_key = types.InlineKeyboardMarkup()
     for column in Postgres.get_columns(table):
         columns_key.add(types.InlineKeyboardButton(column, callback_data="update#" + table + "@" + primary_key + "@" + column))
-    columns_key.add(types.InlineKeyboardButton("ALL", callback_data="update#" + table + "@" + primary_key + "@*"))
     return columns_key
