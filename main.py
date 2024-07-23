@@ -75,7 +75,7 @@ def com_text(message):
     elif message.text == "DELETE":
         sql_delete.start_delete(message)
     elif message.text == "Помощь":
-        com_help()
+        com_help(message)
 
 
 bot.polling()
