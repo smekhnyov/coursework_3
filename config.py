@@ -15,7 +15,7 @@ bot = telebot.TeleBot(token)
 
 bot_settings = Settings()
 
-def convert_list_to_str(list, colnames) -> str:
+def list_to_str(list, colnames) -> str:
     table = PrettyTable()
     table.field_names = colnames
     for row in list:

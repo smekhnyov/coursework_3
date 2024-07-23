@@ -87,7 +87,7 @@ def sql_query(message):
         cur.execute(message.text)
         rows = cur.fetchall()
         cols = [desc[0] for desc in cur.description]
-        table_str = convert_list_to_str(rows, cols)
+        table_str = list_to_str(rows, cols)
         bot.send_message(message.chat.id, f"Вот результаты вашего запроса:\n\n<pre>{table_str}</pre>", parse_mode='HTML')
     except Exception as e:
         bot.send_message(message.chat.id, f"Произошла ошибка: {e}")
