@@ -25,6 +25,21 @@ def sql_select(message, table, column):
     rows = cur.fetchall()
 
     cols = [desc[0] for desc in cur.description]
-    table_str = convert_list_to_str(rows, cols)
-    bot.send_message(message.chat.id, f"Вот результаты вашего запроса:\n\n<pre>{table_str}</pre>", parse_mode='HTML')
 
+    if bot_settings.get_save() == 0:
+        table_str = convert_list_to_str(rows, cols)
+        bot.send_message(message.chat.id, f"Вот результаты вашего запроса:\n\n<pre>{table_str}</pre>", parse_mode='HTML')
+    elif bot_settings.get_save() == 1:
+        list_to_csv(rows, cols, f"{table}_{column if column != '*' else 'all'}.csv")
+        bot.send_document(message.chat.id, open(f"{table}_{column if column != '*' else 'all'}.csv", "rb"))
+    else:
+        msg = bot.send_message(message.chat.id, "Вывести в сообщении или сохранить в файл? (M/F)")
+        bot.register_next_step_handler(msg, save_select, table, column, rows, cols)
+
+def save_select(message, table, column, rows, cols):
+    if message.text == "M":
+        table_str = convert_list_to_str(rows, cols)
+        bot.send_message(message.chat.id, f"Вот результаты вашего запроса:\n\n<pre>{table_str}</pre>", parse_mode='HTML')
+    else:
+        list_to_csv(rows, cols, f"{table}_{column if column != '*' else 'all'}.csv")
+        bot.send_document(message.chat.id, open(f"{table}_{column if column != '*' else 'all'}.csv", "rb"))

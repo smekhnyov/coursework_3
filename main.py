@@ -97,11 +97,12 @@ def com_settings(message):
 
 @bot.callback_query_handler(func = lambda call: call.data.startswith("settings#"))
 def call_settings(call):
-    global set_save, set_dist
     if call.data == "settings#save#0":
-        bot_settings.set_save(False)
+        bot_settings.set_save(0)
     elif call.data == "settings#save#1":
-        bot_settings.set_save(True)
+        bot_settings.set_save(1)
+    elif call.data == "settings#save#2":
+        bot_settings.set_save(2)
     elif call.data == "settings#dist#0":
         bot_settings.set_dist(0)
     elif call.data == "settings#dist#1":

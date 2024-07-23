@@ -4,6 +4,7 @@ import psycopg2
 import os
 from prettytable import PrettyTable
 from Settings import Settings
+import csv
 
 load_dotenv(dotenv_path="config.env")
 
@@ -25,13 +26,11 @@ def convert_list_to_str(list, colnames) -> str:
     return table_str
 
 def list_to_csv(list, colnames, file_path) -> None:
-    columns = [desc[0] for desc in cur.description]
-
     # Открытие файла и запись данных в CSV
-    with open(file_path, mode='w', newline='', encoding='utf-8') as file:
+    with open(f"./{file_path}", mode='w', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
         # Запись заголовков колонок
-        writer.writerow(columns)
+        writer.writerow(colnames)
         # Запись данных
-        writer.writerows(rows)
+        writer.writerows(list)
 

@@ -1,10 +1,10 @@
 class Settings:
 
-    def __init__(self, save: bool = False, dist: int = 2):
+    def __init__(self, save: int = 2, dist: int = 2):
         self.save = save
         self.dist = dist
 
-    def get_save(self) -> bool:
+    def get_save(self) -> int:
         return self.save
 
     def get_dist(self) -> int:

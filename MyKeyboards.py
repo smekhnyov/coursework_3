@@ -32,16 +32,17 @@ def update_columns(table, primary_key):
     return columns_key
 
 def settings():
-    global set_save, set_dist
     settings_key = types.InlineKeyboardMarkup()
-    if bot_settings.get_save():
-        settings_key.add(types.InlineKeyboardButton("Вывод: в csv файл", callback_data="settings#save#0"))
-    else:
+    if bot_settings.get_save() == 0:
         settings_key.add(types.InlineKeyboardButton("Вывод: текстом в сообщение", callback_data="settings#save#1"))
-    if bot_settings.get_dist() == 0:
-        settings_key.add(types.InlineKeyboardButton("Все значения", callback_data="settings#dist#1"))
-    elif bot_settings.get_dist() == 1:
-        settings_key.add(types.InlineKeyboardButton("Уникальные значения", callback_data="settings#dist#2"))
+    elif bot_settings.get_save() == 1:
+        settings_key.add(types.InlineKeyboardButton("Вывод: в csv файл", callback_data="settings#save#2"))
     else:
-        settings_key.add(types.InlineKeyboardButton("Спрашивать каждый раз", callback_data="settings#dist#0"))
+        settings_key.add(types.InlineKeyboardButton("Вывод: спрашивать", callback_data="settings#save#0"))
+    if bot_settings.get_dist() == 0:
+        settings_key.add(types.InlineKeyboardButton("Значения: все", callback_data="settings#dist#1"))
+    elif bot_settings.get_dist() == 1:
+        settings_key.add(types.InlineKeyboardButton("Значения: только уникальные", callback_data="settings#dist#2"))
+    else:
+        settings_key.add(types.InlineKeyboardButton("Значения: спрашивать", callback_data="settings#dist#0"))
     return settings_key
