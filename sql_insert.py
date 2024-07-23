@@ -17,15 +17,14 @@ def sql_insert(message: telebot.types.Message, table: str, data: list, current_c
     else:
         info = Postgres.get_column_info(table, current_column)
         if not info['is_nullable'] and message.text == 'NULL':
-            bot.send_message(message.chat.id, f"Column '{current_column}' cannot be NULL. Please enter a value.")
+            bot.send_message(message.chat.id, f"Значение для столбца '{current_column}' не может быть NULL. Пожалуйста, введите значение.")
             msg = bot.send_message(message.chat.id, f"INSERT INTO {table} ({current_column})\n\n<pre>{info}</pre>",
                                    parse_mode='HTML')
             bot.register_next_step_handler(msg, sql_insert, table, data, current_column)
             return
         elif not validate_input(message.text, info['data_type'], info['character_maximum_length']) and message.text != 'DEFAULT':
             bot.send_message(message.chat.id,
-                             f"Invalid data type or length for column '{current_column}'. Expected {info['data_type']} "
-                             f"with maximum length {info['character_maximum_length']}.")
+                             f"Недопустимый тип данных или длина для столбца '{current_column}'. Ожидается {info['data_type']} с максимальной длиной {info['character_maximum_length']}.")
             msg = bot.send_message(message.chat.id, f"INSERT INTO {table} ({current_column})\n\n<pre>{info}</pre>",
                                    parse_mode='HTML')
             bot.register_next_step_handler(msg, sql_insert, table, data, current_column)
@@ -42,7 +41,7 @@ def sql_insert(message: telebot.types.Message, table: str, data: list, current_c
                 return end_insert(message, table, data)
 
     info = Postgres.get_column_info(table, current_column)
-    msg = bot.send_message(message.chat.id, f"INSERT INTO {table} ({current_column})\n\n<pre>{info}</pre>", parse_mode='HTML')
+    msg = bot.send_message(message.chat.id, f"Введите значение для столбца '{current_column}':\n\n<pre>{info}</pre>", parse_mode='HTML')
     bot.register_next_step_handler(msg, sql_insert, table, data, current_column)
 
 def end_insert(message, table, data):
@@ -60,4 +59,4 @@ def end_insert(message, table, data):
     script = f"INSERT INTO {table} ({info}) VALUES ({values_str})"
     cur.execute(script)
     conn.commit()
-    bot.send_message(message.chat.id, "INSERT")
+    bot.send_message(message.chat.id, "Данные успешно вставлены в таблицу.")

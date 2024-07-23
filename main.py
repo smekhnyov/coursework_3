@@ -1,3 +1,4 @@
+import sql_delete
 from config import *
 import MyKeyboards
 import re
@@ -10,17 +11,71 @@ import sql_delete
 def com_start(message):
     bot.send_message(message.chat.id, "Hello", reply_markup=MyKeyboards.main())
 
+@bot.message_handler(commands=["help"])
+def com_help(message):
+    bot.send_message(message.chat.id, "<b>Добро пожаловать!</b>\n"
+                                      "<i>Этот бот позволяет выполнять различные операции с базой данных PostgreSQL. Вот доступные команды и их возможности:</i>\n"
+                                      "\n"
+                                      "<b>/start</b>: Начните работу с ботом. Эта команда выводит приветственное сообщение и главное меню.\n"
+                                      "<b>/help</b>: Получите список всех доступных команд и их описание.\n"
+                                      "\n"
+                                      "<b>Основные команды:</b>\n"
+                                      "\n"
+                                      "1. <b>SELECT</b>:\n"
+                                      "   - Выбор и отображение данных из таблиц.\n"
+                                      "   - Включает возможность выбора отдельных колонок и использования DISTINCT для удаления дубликатов.\n"
+                                      "\n"
+                                      "2. <b>CREATE</b>:\n"
+                                      "   - Создание новых таблиц в базе данных.\n"
+                                      "   - Добавление новых записей в существующие таблицы.\n"
+                                      "\n"
+                                      "3. <b>INSERT</b>:\n"
+                                      "   - Вставка новых данных в таблицы.\n"
+                                      "   - Поддержка ввода значений по умолчанию, проверка типов данных и длины значений.\n"
+                                      "\n"
+                                      "4. <b>UPDATE</b>:\n"
+                                      "   - Обновление существующих данных в таблицах.\n"
+                                      "   - Возможность выбора таблицы, колонки и строки для обновления.\n"
+                                      "   - Проверка на допустимость значений и типов данных.\n"
+                                      "\n"
+                                      "5. <b>DELETE</b>:\n"
+                                      "   - Удаление данных из таблиц.\n"
+                                      "   - Возможность удаления целых таблиц, отдельных колонок или строк по первичному ключу.\n"
+                                      "   - Подтверждение удаления для предотвращения случайных действий.\n"
+                                      "\n"
+                                      "<b>Дополнительные функции:</b>\n"
+                                      "\n"
+                                      "- <b>Валидация данных</b>:\n"
+                                      "  - Проверка типов данных и максимальной длины значений для вставки и обновления.\n"
+                                      "  - Поддержка различных типов данных, таких как integer, numeric, boolean, date, timestamp и текстовые поля.\n"
+                                      "\n"
+                                      "- <b>Работа с ключами</b>:\n"
+                                      "  - Выбор и использование первичных ключей для операций обновления и удаления.\n"
+                                      "  - Автоматическое определение и отображение первичных ключей таблиц.\n"
+                                      "\n"
+                                      "<b>Пример использования</b>:\n"
+                                      "- Введите команду <b>INSERT</b> для начала процесса вставки данных в таблицу.\n"
+                                      "- Выберите таблицу и введите значения для каждой колонки по очереди.\n"
+                                      "- Бот проверит введенные значения и вставит их в таблицу.\n"
+                                      "\n"
+                                      "<i>Если у вас возникли вопросы или вам нужна дополнительная помощь, обратитесь к документации или свяжитесь с поддержкой.</i>\n",
+                     parse_mode='HTML', reply_markup=MyKeyboards.main())
+
 
 @bot.message_handler(content_types=["text"])
 def com_text(message):
     if message.text == "SELECT":
-        bot.send_message(message.chat.id, "SELECT", reply_markup=MyKeyboards.tables("select"))
+        bot.send_message(message.chat.id, "Выберите таблицу для выполнения команды SELECT.", reply_markup=MyKeyboards.tables("select"))
+    elif message.text == "CREATE":
+        bot.send_message(message.chat.id, "Выберите таблицу для создания.", reply_markup=MyKeyboards.tables())
     elif message.text == "INSERT":
-        bot.send_message(message.chat.id, "INSERT", reply_markup=MyKeyboards.tables("insert"))
+        bot.send_message(message.chat.id, "Выберите таблицу для вставки данных.", reply_markup=MyKeyboards.tables("insert"))
     elif message.text == "UPDATE":
-        bot.send_message(message.chat.id, "UPDATE", reply_markup=MyKeyboards.tables("update"))
+        bot.send_message(message.chat.id, "Выберите таблицу для обновления данных.", reply_markup=MyKeyboards.tables("update"))
     elif message.text == "DELETE":
         sql_delete.start_delete(message)
+    elif message.text == "Помощь":
+        com_help()
 
 
 bot.polling()

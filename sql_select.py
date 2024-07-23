@@ -8,11 +8,11 @@ import MyKeyboards
 def call_select(call):
     if len(call.data.split("@")) == 1:
         table = call.data.split("#")[1]
-        bot.send_message(call.message.chat.id, "SELECT", reply_markup=MyKeyboards.select_columns(table))
+        bot.send_message(call.message.chat.id, "Пожалуйста, выберите столбцы для вашего запроса.", reply_markup=MyKeyboards.select_columns(table))
     else:
         table = re.sub("select#", "", call.data).split("@")[0]
         column = re.sub("select#", "", call.data).split("@")[1]
-        msg = bot.send_message(call.message.chat.id, f"DISTINCT? (Y/N)")
+        msg = bot.send_message(call.message.chat.id, f"Хотите выбрать уникальные значения? (Y/N)")
         bot.register_next_step_handler(msg, sql_select, table, column)
 
 
@@ -26,5 +26,5 @@ def sql_select(message: telebot.types.Message, table:str, column:str):
 
     cols = [desc[0] for desc in cur.description]
     table_str = convert_list_to_str(rows, cols)
-    bot.send_message(message.chat.id, f"<pre>{table_str}</pre>", parse_mode='HTML')
+    bot.send_message(message.chat.id, f"Вот результаты вашего запроса:\n\n<pre>{table_str}</pre>", parse_mode='HTML')
 
