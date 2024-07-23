@@ -1,4 +1,4 @@
-import telebot
+from telebot import types
 from config import *
 import re
 import MyKeyboards
