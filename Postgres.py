@@ -68,3 +68,24 @@ def get_data_by_key_from_column(table, column, key) -> str:
     cur.execute(f"SELECT {column} FROM {table} WHERE {Postgres.get_primary_keys(table)} = '{key}'")
     data = cur.fetchone()
     return data[0]
+
+def validate_input(value, data_type, max_length=None) -> bool:
+    try:
+        if data_type == 'integer':
+            int(value)
+        elif data_type == 'numeric' or data_type == 'double precision' or data_type == 'real':
+            float(value)
+        elif data_type == 'boolean':
+            if value.lower() not in ['true', 'false']:
+                raise ValueError
+        elif data_type in ['date', 'timestamp', 'timestamp with time zone', 'timestamp without time zone']:
+            import datetime
+            datetime.datetime.strptime(value, '%Y-%m-%d' if data_type == 'date' else '%Y-%m-%d %H:%M:%S')
+        elif data_type == 'character varying' or data_type == 'text':
+            if max_length is not None and len(value) > max_length:
+                raise ValueError
+        else:
+            pass
+        return True
+    except ValueError:
+        return False

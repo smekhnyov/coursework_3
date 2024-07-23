@@ -1,7 +1,4 @@
-import telebot
 from config import *
-import re
-import MyKeyboards
 import Postgres
 
 
@@ -9,7 +6,7 @@ import Postgres
 def call_insert(call):
     sql_insert(call.message, call.data.split("#")[1], [])
 
-def sql_insert(message: telebot.types.Message, table: str, data: list, current_column:str=None):
+def sql_insert(message, table, data, current_column=None):
     columns = Postgres.get_columns(table)
 
     if current_column is None:
@@ -22,7 +19,7 @@ def sql_insert(message: telebot.types.Message, table: str, data: list, current_c
                                    parse_mode='HTML')
             bot.register_next_step_handler(msg, sql_insert, table, data, current_column)
             return
-        elif not validate_input(message.text, info['data_type'], info['character_maximum_length']) and message.text != 'DEFAULT':
+        elif not Postgres.validate_input(message.text, info['data_type'], info['character_maximum_length']) and message.text != 'DEFAULT':
             bot.send_message(message.chat.id,
                              f"Недопустимый тип данных или длина для столбца '{current_column}'. Ожидается {info['data_type']} с максимальной длиной {info['character_maximum_length']}.")
             msg = bot.send_message(message.chat.id, f"INSERT INTO {table} ({current_column})\n\n<pre>{info}</pre>",

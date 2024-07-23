@@ -16,7 +16,7 @@ def call_select(call):
         bot.register_next_step_handler(msg, sql_select, table, column)
 
 
-def sql_select(message: telebot.types.Message, table:str, column:str):
+def sql_select(message, table, column):
     cur = conn.cursor()
     if message.text == "Y":
         cur.execute("SELECT DISTINCT " + column + " FROM " + table)

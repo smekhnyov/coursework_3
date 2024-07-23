@@ -1,4 +1,3 @@
-import telebot
 from config import *
 import re
 import MyKeyboards
@@ -26,7 +25,7 @@ def call_update(call):
                                f"<pre>{Postgres.get_column_info(table, column)}</pre>", parse_mode='HTML')
         bot.register_next_step_handler(msg, sql_update, table, column, primary_key)
 
-def sql_update(message: telebot.types.Message, table: str, column: str, primary_key: str):
+def sql_update(message, table, column, primary_key):
     info = Postgres.get_column_info(table, column)
     new_value = message.text
 
@@ -35,7 +34,7 @@ def sql_update(message: telebot.types.Message, table: str, column: str, primary_
         bot.register_next_step_handler(msg, sql_update, table, column, primary_key)
         return
 
-    if not validate_input(new_value, info['data_type'], info['character_maximum_length']):
+    if not Postgres.validate_input(new_value, info['data_type'], info['character_maximum_length']):
         msg = bot.send_message(message.chat.id, "Недопустимый ввод. Пожалуйста, введите новое значение.")
         bot.register_next_step_handler(msg, sql_update, table, column, primary_key)
         return
