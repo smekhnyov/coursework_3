@@ -2,6 +2,7 @@ import telebot
 from config import *
 import re
 import MyKeyboards
+import os
 
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith("select#"))
@@ -43,6 +44,7 @@ def sql_select(message, table, column, distinct=False):
     elif bot_settings.get_save() == 1:
         list_to_csv(rows, cols, f"{table}_{column if column != '*' else 'all'}.csv")
         bot.send_document(message.chat.id, open(f"{table}_{column if column != '*' else 'all'}.csv", "rb"))
+        os.remove(f"{table}_{column if column != '*' else 'all'}.csv")
     else:
         msg = bot.send_message(message.chat.id, "Вывести в сообщении или сохранить в файл? (M/F)")
         bot.register_next_step_handler(msg, save_select, table, column, rows, cols)
@@ -54,3 +56,4 @@ def save_select(message, table, column, rows, cols):
     else:
         list_to_csv(rows, cols, f"{table}_{column if column != '*' else 'all'}.csv")
         bot.send_document(message.chat.id, open(f"{table}_{column if column != '*' else 'all'}.csv", "rb"))
+        os.remove(f"{table}_{column if column != '*' else 'all'}.csv")
