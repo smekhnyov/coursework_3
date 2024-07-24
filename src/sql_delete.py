@@ -1,8 +1,8 @@
 from telebot import types
-from config import *
-import re
-import MyKeyboards
+
 import Postgres
+from config import *
+
 
 def start_delete(message):
     delete_menu = types.InlineKeyboardMarkup()
@@ -25,10 +25,14 @@ def call_delete(call):
         yn_menu.add(types.InlineKeyboardButton("Нет", callback_data=call.data + "@N"))
         msg = bot.send_message(call.message.chat.id, "Вы уверены, что хотите удалить таблицу?", reply_markup=yn_menu)
     elif len(call.data.split("@")) == 3 and call.data.startswith("delete#table") and call.data.split("@")[2] == "Y":
-        cur = conn.cursor()
-        cur.execute(f"DROP TABLE {call.data.split("@")[1]} CASCADE")
-        conn.commit()
-        bot.send_message(call.message.chat.id, "Таблица успешно удалена.")
+        try:
+            cur = conn.cursor()
+            cur.execute(f"DROP TABLE {call.data.split("@")[1]} CASCADE")
+            conn.commit()
+            bot.send_message(call.message.chat.id, "Таблица успешно удалена.")
+        except Exception as e:
+            bot.send_message(call.message.chat.id, f"Произошла ошибка: {e}", parse_mode='HTML')
+        start_delete(call.message)
 
 
     elif len(call.data.split("@")) == 1 and call.data.startswith("delete#column"):
@@ -47,11 +51,14 @@ def call_delete(call):
         yn_menu.add(types.InlineKeyboardButton("Нет", callback_data=call.data + "@N"))
         msg = bot.send_message(call.message.chat.id, "Вы уверены, что хотите удалить столбец?", reply_markup=yn_menu)
     elif len(call.data.split("@")) == 4 and call.data.startswith("delete#column") and call.data.split("@")[3] == "Y":
-        cur = conn.cursor()
-        cur.execute(f"ALTER TABLE {call.data.split("@")[1]} DROP COLUMN {call.data.split("@")[2]}")
-        conn.commit()
-        bot.send_message(call.message.chat.id, "Столбец успешно удален.")
-
+        try:
+            cur = conn.cursor()
+            cur.execute(f"ALTER TABLE {call.data.split("@")[1]} DROP COLUMN {call.data.split("@")[2]}")
+            conn.commit()
+            bot.send_message(call.message.chat.id, "Столбец успешно удален.")
+        except Exception as e:
+            bot.send_message(call.message.chat.id, f"Произошла ошибка: {e}", parse_mode='HTML')
+            return
 
     elif len(call.data.split("@")) == 1 and call.data.startswith("delete#row"):
         tables_key = types.InlineKeyboardMarkup()
@@ -70,7 +77,11 @@ def call_delete(call):
         yn_menu.add(types.InlineKeyboardButton("Нет", callback_data=call.data + "@N"))
         msg = bot.send_message(call.message.chat.id, "Вы уверены, что хотите удалить строку?", reply_markup=yn_menu)
     elif len(call.data.split("@")) == 4 and call.data.startswith("delete#row") and call.data.split("@")[3] == "Y":
-        cur = conn.cursor()
-        cur.execute(f"DELETE FROM {call.data.split("@")[1]} WHERE {Postgres.get_primary_keys(call.data.split("@")[1])} = '{call.data.split("@")[2]}'")
-        conn.commit()
-        bot.send_message(call.message.chat.id, "Строка успешно удалена.")
+        try:
+            cur = conn.cursor()
+            cur.execute(f"DELETE FROM {call.data.split("@")[1]} WHERE {Postgres.get_primary_keys(call.data.split("@")[1])} = '{call.data.split("@")[2]}'")
+            conn.commit()
+            bot.send_message(call.message.chat.id, "Строка успешно удалена.")
+        except Exception as e:
+            bot.send_message(call.message.chat.id, f"Произошла ошибка: {e}", parse_mode='HTML')
+            return

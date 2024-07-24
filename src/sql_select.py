@@ -1,8 +1,8 @@
-import telebot
-from config import *
-import re
-import MyKeyboards
 import os
+import re
+
+import MyKeyboards
+from config import *
 
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith("select#"))
@@ -29,12 +29,16 @@ def dist_select(message, table, column):
         sql_select(message, table, column)
 
 def sql_select(message, table, column, distinct=False):
-    cur = conn.cursor()
-    if distinct:
-        cur.execute("SELECT DISTINCT " + column + " FROM " + table)
-    else:
-        cur.execute("SELECT " + column + " FROM " + table)
-    rows = cur.fetchall()
+    try:
+        cur = conn.cursor()
+        if distinct:
+            cur.execute("SELECT DISTINCT " + column + " FROM " + table)
+        else:
+            cur.execute("SELECT " + column + " FROM " + table)
+        rows = cur.fetchall()
+    except Exception as e:
+        bot.send_message(message.chat.id, f"Произошла ошибка: {e}", parse_mode='HTML')
+        return
 
     cols = [desc[0] for desc in cur.description]
 

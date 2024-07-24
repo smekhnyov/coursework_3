@@ -1,5 +1,6 @@
-from config import *
 import Postgres
+from config import *
+import MyKeyboards
 
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith("insert#"))
@@ -52,8 +53,12 @@ def end_insert(message, table, data):
             values.append(f"'{item}'")
 
     values_str = ', '.join(values)
-    cur = conn.cursor()
-    script = f"INSERT INTO {table} ({info}) VALUES ({values_str})"
-    cur.execute(script)
-    conn.commit()
-    bot.send_message(message.chat.id, "Данные успешно вставлены в таблицу.")
+    try:
+        cur = conn.cursor()
+        script = f"INSERT INTO {table} ({info}) VALUES ({values_str})"
+        cur.execute(script)
+        conn.commit()
+        bot.send_message(message.chat.id, "Данные успешно вставлены в таблицу.", reply_markup=MyKeyboards.main())
+    except Exception as e:
+        bot.send_message(message.chat.id, f"Произошла ошибка: {e}", parse_mode='HTML')
+        return

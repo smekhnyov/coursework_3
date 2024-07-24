@@ -1,12 +1,14 @@
-from dotenv import load_dotenv
-import telebot
-import psycopg2
-import os
-from prettytable import PrettyTable
-from Settings import Settings
 import csv
+import os
 
-load_dotenv(dotenv_path="config.env")
+import psycopg2
+import telebot
+from dotenv import load_dotenv
+from prettytable import PrettyTable
+
+from Settings import Settings
+
+load_dotenv(dotenv_path='../config.env')
 
 conn = psycopg2.connect(dbname=os.getenv("DB_NAME"), user=os.getenv("DB_USER"), password=os.getenv("DB_PASSWORD"), host=os.getenv("DB_HOST"), port=os.getenv("DB_PORT"))
 

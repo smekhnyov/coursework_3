@@ -1,7 +1,9 @@
-from config import *
 import re
+
 import MyKeyboards
 import Postgres
+from config import *
+from telebot import types
 
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith("update#"))
@@ -45,13 +47,17 @@ def sql_update(message, table, column, primary_key):
         new_value = f"'{new_value}'"
 
     # Construct the SQL update statement
-    cur = conn.cursor()
-    primary_key_column = Postgres.get_primary_keys(table)
-    update_query = f"""
-        UPDATE {table} 
-        SET {column} = {new_value} 
-        WHERE {primary_key_column} = '{primary_key}';
-    """
-    cur.execute(update_query)
-    conn.commit()
-    bot.send_message(message.chat.id, "Данные успешно обновлены.")
+    try:
+        cur = conn.cursor()
+        primary_key_column = Postgres.get_primary_keys(table)
+        update_query = f"""
+            UPDATE {table} 
+            SET {column} = {new_value} 
+            WHERE {primary_key_column} = '{primary_key}';
+        """
+        cur.execute(update_query)
+        conn.commit()
+        bot.send_message(message.chat.id, "Данные успешно обновлены.")
+    except Exception as e:
+        bot.send_message(message.chat.id, f"Произошла ошибка: {e}", parse_mode='HTML')
+        return

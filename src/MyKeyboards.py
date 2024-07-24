@@ -1,7 +1,8 @@
 from telebot import types
-import telebot
-from config import *
+
 import Postgres
+from config import *
+
 
 def main():
     main_key = types.ReplyKeyboardMarkup(True, True)
@@ -31,6 +32,12 @@ def update_columns(table, primary_key):
         columns_key.add(types.InlineKeyboardButton(column, callback_data="update#" + table + "@" + primary_key + "@" + column))
     return columns_key
 
+def requests():
+    request_key = types.ReplyKeyboardMarkup(True, True)
+    request_key.row('Выполнить')
+    request_key.row('Создать')
+    request_key.row('Удалить')
+
 def settings():
     settings_key = types.InlineKeyboardMarkup()
     if bot_settings.get_save() == 0:
@@ -45,4 +52,17 @@ def settings():
         settings_key.add(types.InlineKeyboardButton("Значения: только уникальные", callback_data="settings#dist#2"))
     else:
         settings_key.add(types.InlineKeyboardButton("Значения: спрашивать", callback_data="settings#dist#0"))
+    settings_key.add(types.InlineKeyboardButton("Создать запрос", callback_data="settings#request#new"))
+    settings_key.add(types.InlineKeyboardButton("Удалить запрос", callback_data="settings#request#del"))
+    settings_key.add(types.InlineKeyboardButton("Удалить все запросы", callback_data="settings#request#delall"))
     return settings_key
+
+def requests(request_file):
+    requests_key = types.ReplyKeyboardMarkup(True, True)
+    with open(request_file, mode='r', newline='', encoding='utf-8') as file:
+        reader = csv.reader(file)
+        next(reader)
+        for row in reader:
+            requests_key.row(row[1])
+    requests_key.row('Назад')
+    return requests_key
