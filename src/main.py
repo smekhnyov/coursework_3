@@ -1,11 +1,12 @@
-import sql_delete
-from config import *
 import MyKeyboards
-import re
-import sql_insert
-import sql_select
-import sql_update
 import sql_delete
+import sql_insert
+import sql_request
+import sql_update
+import sql_select
+from config import *
+
+request_file = '../request.csv'
 
 @bot.message_handler(commands=["start"])
 def com_start(message):
@@ -73,29 +74,19 @@ def com_text(message):
         sql_delete.start_delete(message)
     elif message.text == "Выполнить":
         msg = bot.send_message(message.chat.id, "Напиши свой запрос.")
-        bot.register_next_step_handler(msg, sql_query)
+        bot.register_next_step_handler(msg, sql_request.one)
     elif message.text == "Запросы":
-        pass
+        msg = bot.send_message(message.chat.id, "Запросы", reply_markup=MyKeyboards.requests(request_file))
+        bot.register_next_step_handler(msg, sql_request.one, True)
     elif message.text == "Настройки":
         com_settings(message)
     elif message.text == "Помощь":
         com_help(message)
 
-def sql_query(message):
-    try:
-        cur = conn.cursor()
-        cur.execute(message.text)
-        rows = cur.fetchall()
-        cols = [desc[0] for desc in cur.description]
-        table_str = list_to_str(rows, cols)
-        bot.send_message(message.chat.id, f"Вот результаты вашего запроса:\n\n<pre>{table_str}</pre>", parse_mode='HTML')
-    except Exception as e:
-        bot.send_message(message.chat.id, f"Произошла ошибка: {e}")
-
 def com_settings(message):
     bot.send_message(message.chat.id, "Настройки", reply_markup=MyKeyboards.settings())
 
-@bot.callback_query_handler(func = lambda call: call.data.startswith("settings#"))
+@bot.callback_query_handler(func = lambda call: call.data.startswith("settings#save") or call.data.startswith("settings#dist"))
 def call_settings(call):
     if call.data == "settings#save#0":
         bot_settings.set_save(0)
@@ -110,6 +101,5 @@ def call_settings(call):
     elif call.data == "settings#dist#2":
         bot_settings.set_dist(2)
     bot.edit_message_text("Настройки", call.message.chat.id, call.message.message_id, reply_markup=MyKeyboards.settings())
-
 
 bot.polling()
