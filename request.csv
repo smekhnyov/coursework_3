@@ -1,0 +1,2 @@
+request,name
+SELECT * FROM registrations WHERE student_id = (SELECT student_id FROM students WHERE last_name = 'Smith');,first

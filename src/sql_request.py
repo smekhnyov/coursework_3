@@ -44,7 +44,7 @@ def delete_all_request(message):
         delete_all()
     bot.send_message(message.chat.id, "Удалено", reply_markup=MyKeyboards.main())
 
-def execute(request, tables = None, colummns = None, distinct = None, keys = None):
+def execute(request):
     try:
         cur = conn.cursor()
         cur.execute(request)
@@ -67,7 +67,7 @@ def get(name):
             if row[1] == name:
                 return row[0]
 
-def get_all(name):
+def get_all():
     rows = {}
     with open(request_file, mode='r', newline='', encoding='utf-8') as file:
         reader = csv.reader(file)
