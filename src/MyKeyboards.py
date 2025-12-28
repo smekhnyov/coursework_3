@@ -1,4 +1,5 @@
 from telebot import types
+from telebot.types import WebAppInfo
 
 import Postgres
 from config import *
@@ -66,3 +67,8 @@ def requests(request_file):
             requests_key.row(row[1])
     requests_key.row('Назад')
     return requests_key
+
+def app_link(table, column):
+    app_key = types.InlineKeyboardMarkup()
+    app_key.add(types.InlineKeyboardButton("Открыть в приложении", web_app=WebAppInfo(url=f"https://smekhnyov.github.io/thesis_front/?action=select&table={table}&column={column}")))
+    return app_key

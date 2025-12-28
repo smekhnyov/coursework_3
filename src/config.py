@@ -8,7 +8,7 @@ from prettytable import PrettyTable
 
 from Settings import Settings
 
-load_dotenv(dotenv_path='../config.env')
+load_dotenv(dotenv_path="C:/Users/smehn/PycharmProjects/coursework_3/config.env")
 
 conn = psycopg2.connect(dbname=os.getenv("DB_NAME"), user=os.getenv("DB_USER"), password=os.getenv("DB_PASSWORD"), host=os.getenv("DB_HOST"), port=os.getenv("DB_PORT"))
 

@@ -1,8 +1,10 @@
 import os
 import re
+from collections.abc import coroutine
 
 import MyKeyboards
 from config import *
+
 
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith("select#"))
@@ -44,7 +46,7 @@ def sql_select(message, table, column, distinct=False):
 
     if bot_settings.get_save() == 0:
         table_str = list_to_str(rows, cols)
-        bot.send_message(message.chat.id, f"Вот результаты вашего запроса:\n\n<pre>{table_str}</pre>", parse_mode='HTML')
+        bot.send_message(message.chat.id, f"Вот результаты вашего запроса:\n\n<pre>{table_str}</pre>", parse_mode='HTML', reply_markup=MyKeyboards.app_link(table, column))
     elif bot_settings.get_save() == 1:
         list_to_csv(rows, cols, f"{table}_{column if column != '*' else 'all'}.csv")
         bot.send_document(message.chat.id, open(f"{table}_{column if column != '*' else 'all'}.csv", "rb"))
@@ -56,7 +58,7 @@ def sql_select(message, table, column, distinct=False):
 def save_select(message, table, column, rows, cols):
     if message.text == "M":
         table_str = list_to_str(rows, cols)
-        bot.send_message(message.chat.id, f"Вот результаты вашего запроса:\n\n<pre>{table_str}</pre>", parse_mode='HTML')
+        bot.send_message(message.chat.id, f"Вот результаты вашего запроса:\n\n<pre>{table_str}</pre>", parse_mode='HTML', reply_markup=MyKeyboards.app_link(table, column))
     else:
         list_to_csv(rows, cols, f"{table}_{column if column != '*' else 'all'}.csv")
         bot.send_document(message.chat.id, open(f"{table}_{column if column != '*' else 'all'}.csv", "rb"))

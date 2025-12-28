@@ -48,11 +48,15 @@ def execute(request):
     try:
         cur = conn.cursor()
         cur.execute(request)
-        rows = cur.fetchall()
-        cols = [desc[0] for desc in cur.description]
-        table_str = list_to_str(rows, cols)
-        return f"Вот результаты вашего запроса:\n\n<pre>{table_str}</pre>"
-    except Exception as e:
+        if "select" not in request.lower():
+            conn.commit()
+            return "Запрос выполнен успешно."
+        else:
+            rows = cur.fetchall()
+            cols = [desc[0] for desc in cur.description]
+            table_str = list_to_str(rows, cols)
+            return f"Вот результаты вашего запроса:\n\n<pre>{table_str}</pre>"
+    except (Exception,psycopg2.DatabaseError) as e:
         return f"Произошла ошибка: {e}"
 
 def save(request, name = None):
